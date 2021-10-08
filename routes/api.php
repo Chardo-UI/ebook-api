@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 
 /*
@@ -27,5 +28,20 @@ Route::put('/books/{id}',[BookController::class, 'update']);
 Route::delete('/books/{id}',[BookController::class, 'destroy']);
 */
 
-Route::resource('books', BookController::class)->except('create', 'edit');
-Route::resource('authors', AuthorController::class)->except('create', 'edit');
+//Route::resource('books', BookController::class)->except('create', 'edit');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::resource('authors', AuthorController::class)->except('create', 'edit', 'store', 'update', 'destroy');
+Route::resource('books', BookController::class)->except('create', 'edit', 'store', 'update', 'destroy');
+
+//Sanctum
+Route::middleware('auth:sanctum')->group(function () {
+    //books
+    Route::resource('books', BookController::class)->except('create', 'edit','index','show');
+
+    //author
+    Route::resource('authors', AuthorController::class)->except('create', 'edit', 'index', 'show');
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
